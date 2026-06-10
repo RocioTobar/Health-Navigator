@@ -1,0 +1,388 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Health Navigator — Survey</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62..125,400..900&family=Instrument+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --paper:#FBFBF7;
+    --ink:#101D2C;
+    --ink-soft:#4A5666;
+    --stamp:#D7372E;
+    --teal:#0E8C7F;
+    --teal-soft:#E3F2F0;
+    --marker:#FFE34D;
+    --line:#D9DCD3;
+    --font-display:'Archivo',sans-serif;
+    --font-body:'Instrument Sans',sans-serif;
+    --font-mono:'IBM Plex Mono',monospace;
+  }
+  *{margin:0;padding:0;box-sizing:border-box}
+  body{
+    font-family:var(--font-body);background:var(--paper);color:var(--ink);
+    line-height:1.55;-webkit-font-smoothing:antialiased;
+  }
+  ::selection{background:var(--marker)}
+  .wrap{max-width:760px;margin:0 auto;padding:0 22px}
+
+  .topbar{border-bottom:1px solid var(--line);background:rgba(251,251,247,.94)}
+  .topbar-inner{display:flex;align-items:center;justify-content:space-between;padding:14px 0}
+  .wordmark{
+    font-family:var(--font-display);font-weight:800;font-size:17px;
+    display:flex;align-items:center;gap:9px;text-decoration:none;color:var(--ink);
+  }
+  .wordmark .cross{
+    display:inline-grid;place-items:center;width:25px;height:25px;border-radius:7px;
+    background:var(--teal);color:#fff;font-size:14px;font-weight:900;
+  }
+  .progress-label{font-family:var(--font-mono);font-size:12px;color:var(--ink-soft)}
+
+  .head{padding:54px 0 36px}
+  .eyebrow{
+    font-family:var(--font-mono);font-size:12.5px;letter-spacing:.08em;text-transform:uppercase;
+    color:var(--teal);font-weight:600;display:inline-flex;align-items:center;gap:8px;margin-bottom:14px;
+  }
+  .eyebrow::before{content:"";width:22px;height:2px;background:var(--teal)}
+  h1{
+    font-family:var(--font-display);font-weight:850;font-stretch:108%;
+    font-size:clamp(28px,4.4vw,42px);line-height:1.06;letter-spacing:-.02em;margin-bottom:14px;
+  }
+  .hl{background:linear-gradient(transparent 58%, var(--marker) 58%, var(--marker) 94%, transparent 94%);padding:0 2px}
+  .head p{color:var(--ink-soft);font-size:16px;max-width:560px}
+  .head .time{
+    display:inline-block;margin-top:14px;font-family:var(--font-mono);font-size:12px;
+    border:1.5px solid var(--ink);border-radius:6px;padding:4px 10px;
+  }
+
+  .block{
+    background:#fff;border:1.5px solid var(--line);border-radius:14px;
+    padding:30px 30px 26px;margin-bottom:22px;position:relative;
+  }
+  .block-tag{
+    position:absolute;top:-11px;left:24px;background:var(--ink);color:var(--paper);
+    font-family:var(--font-mono);font-size:11px;letter-spacing:.08em;text-transform:uppercase;
+    padding:3px 10px;border-radius:5px;
+  }
+  .q{margin-bottom:26px}
+  .q:last-child{margin-bottom:4px}
+  .q-label{
+    font-family:var(--font-display);font-weight:700;font-size:16.5px;
+    letter-spacing:-.01em;display:block;margin-bottom:4px;
+  }
+  .q-hint{font-size:13.5px;color:var(--ink-soft);margin-bottom:12px}
+  .req{color:var(--stamp)}
+
+  input[type=text],input[type=email],textarea,select{
+    width:100%;font:500 15px var(--font-body);color:var(--ink);
+    padding:12px 14px;border:1.5px solid var(--line);border-radius:10px;background:var(--paper);
+  }
+  textarea{min-height:92px;resize:vertical}
+  input:focus,textarea:focus,select:focus{outline:none;border-color:var(--ink);box-shadow:0 0 0 3px var(--teal-soft)}
+
+  .opts{display:flex;flex-direction:column;gap:9px}
+  .opts.cols{display:grid;grid-template-columns:1fr 1fr;gap:9px}
+  @media(max-width:560px){.opts.cols{grid-template-columns:1fr}}
+  .opt{
+    display:flex;align-items:flex-start;gap:11px;cursor:pointer;
+    border:1.5px solid var(--line);border-radius:10px;padding:11px 14px;
+    transition:border-color .12s ease, background .12s ease;font-size:14.5px;
+  }
+  .opt:hover{border-color:var(--ink)}
+  .opt input{margin-top:3px;accent-color:var(--teal);flex:none}
+  .opt:has(input:checked){border-color:var(--teal);background:var(--teal-soft)}
+
+  .scale{display:flex;gap:8px}
+  .scale label{
+    flex:1;text-align:center;cursor:pointer;border:1.5px solid var(--line);border-radius:10px;
+    padding:12px 0;font-family:var(--font-mono);font-weight:600;font-size:15px;
+    transition:border-color .12s ease, background .12s ease;
+  }
+  .scale label:hover{border-color:var(--ink)}
+  .scale input{position:absolute;opacity:0;pointer-events:none}
+  .scale label:has(input:checked){background:var(--ink);color:var(--paper);border-color:var(--ink)}
+  .scale-ends{
+    display:flex;justify-content:space-between;margin-top:7px;
+    font-family:var(--font-mono);font-size:11.5px;color:var(--ink-soft);
+  }
+
+  .submit-zone{text-align:center;padding:14px 0 70px}
+  .btn{
+    font-family:var(--font-display);font-weight:700;font-size:16px;
+    padding:15px 34px;border-radius:11px;border:none;cursor:pointer;
+    background:var(--ink);color:var(--paper);
+    transition:transform .12s ease, box-shadow .12s ease;
+  }
+  .btn:hover{transform:translateY(-1px);box-shadow:0 6px 16px rgba(16,29,44,.18)}
+  .btn:focus-visible{outline:3px solid var(--teal);outline-offset:2px}
+  .submit-note{margin-top:12px;font-family:var(--font-mono);font-size:12px;color:var(--ink-soft)}
+
+  .thanks{display:none;text-align:center;padding:90px 0 110px}
+  .thanks .stamp{
+    display:inline-block;font-family:var(--font-display);font-weight:900;font-stretch:115%;
+    font-size:22px;letter-spacing:.12em;text-transform:uppercase;color:var(--stamp);
+    border:3.5px solid var(--stamp);border-radius:8px;padding:10px 20px;
+    transform:rotate(-6deg);margin-bottom:26px;
+  }
+  .thanks h2{
+    font-family:var(--font-display);font-weight:850;font-size:clamp(26px,4vw,38px);
+    letter-spacing:-.02em;margin-bottom:12px;
+  }
+  .thanks p{color:var(--ink-soft);max-width:440px;margin:0 auto}
+
+  footer{border-top:1px solid var(--line);padding:26px 0 40px}
+  footer p{font-family:var(--font-mono);font-size:11.5px;color:var(--ink-soft);max-width:560px}
+
+  @media (prefers-reduced-motion: reduce){
+    .btn,.opt,.scale label{transition:none}
+  }
+</style>
+</head>
+<body>
+
+<header class="topbar">
+  <div class="wrap topbar-inner">
+    <a class="wordmark" href="#"><span class="cross">+</span>Health Navigator</a>
+    <span class="progress-label">Survey · 3 min</span>
+  </div>
+</header>
+
+<main class="wrap">
+
+  <div id="surveyView">
+    <div class="head">
+      <span class="eyebrow">For internationals in Germany</span>
+      <h1>Tell us about your experience with the <span class="hl">German healthcare system</span>.</h1>
+      <p>We're building an app that explains German healthcare in your language — insurance, doctors, appointments, paperwork. This takes 3 minutes and your answers shape what we build. Anonymous unless you leave your email at the end.</p>
+      <span class="time">⏱ 3 minutes · 13 questions</span>
+    </div>
+
+    <form id="survey">
+
+      <!-- BLOCK A: PROFILE -->
+      <div class="block">
+        <span class="block-tag">A · About you</span>
+
+        <div class="q">
+          <label class="q-label">1. What's your situation in Germany? <span class="req">*</span></label>
+          <div class="opts cols">
+            <label class="opt"><input type="radio" name="status" value="intl_student" required> International student (full degree)</label>
+            <label class="opt"><input type="radio" name="status" value="erasmus"> Exchange student / Erasmus</label>
+            <label class="opt"><input type="radio" name="status" value="worker"> International worker</label>
+            <label class="opt"><input type="radio" name="status" value="other"> Other</label>
+          </div>
+        </div>
+
+        <div class="q">
+          <label class="q-label">2. How long have you been in Germany? <span class="req">*</span></label>
+          <div class="opts cols">
+            <label class="opt"><input type="radio" name="time_de" value="lt6m" required> Less than 6 months</label>
+            <label class="opt"><input type="radio" name="time_de" value="6m_2y"> 6 months to 2 years</label>
+            <label class="opt"><input type="radio" name="time_de" value="2y_5y"> 2 to 5 years</label>
+            <label class="opt"><input type="radio" name="time_de" value="gt5y"> More than 5 years</label>
+          </div>
+        </div>
+
+        <div class="q">
+          <label class="q-label">3. What's your German level? <span class="req">*</span></label>
+          <div class="opts cols">
+            <label class="opt"><input type="radio" name="german" value="a0_a2" required> Beginner (A0–A2)</label>
+            <label class="opt"><input type="radio" name="german" value="b1_b2"> Intermediate (B1–B2)</label>
+            <label class="opt"><input type="radio" name="german" value="c1_c2"> Advanced (C1–C2)</label>
+            <label class="opt"><input type="radio" name="german" value="native"> Native speaker</label>
+          </div>
+        </div>
+
+        <div class="q">
+          <label class="q-label">4. What health insurance do you have?</label>
+          <div class="opts cols">
+            <label class="opt"><input type="radio" name="insurance" value="gesetzlich"> Public / gesetzlich (TK, AOK, Barmer…)</label>
+            <label class="opt"><input type="radio" name="insurance" value="privat"> Private / privat</label>
+            <label class="opt"><input type="radio" name="insurance" value="expat"> Insurance for internationals (Mawista, etc.)</label>
+            <label class="opt"><input type="radio" name="insurance" value="unsure"> I'm not sure 😅</label>
+          </div>
+        </div>
+      </div>
+
+      <!-- BLOCK B: REAL EXPERIENCE -->
+      <div class="block">
+        <span class="block-tag">B · Your real experience</span>
+
+        <div class="q">
+          <label class="q-label">5. Think about the last time you felt sick in Germany. What did you do? <span class="req">*</span></label>
+          <p class="q-hint">Pick what best describes what actually happened.</p>
+          <div class="opts">
+            <label class="opt"><input type="radio" name="last_time" value="doctor" required> Went to the doctor without major issues</label>
+            <label class="opt"><input type="radio" name="last_time" value="struggled"> Went to the doctor, but it was a struggle (language, appointment, insurance…)</label>
+            <label class="opt"><input type="radio" name="last_time" value="delayed"> Waited / postponed it because I didn't know how the system worked</label>
+            <label class="opt"><input type="radio" name="last_time" value="avoided"> Didn't go: self-medicated or called family / doctors back home</label>
+            <label class="opt"><input type="radio" name="last_time" value="never_sick"> I've never been sick here</label>
+          </div>
+        </div>
+
+        <div class="q">
+          <label class="q-label">6. What was the hardest part? <span class="req">*</span></label>
+          <p class="q-hint">Check all that apply.</p>
+          <div class="opts cols">
+            <label class="opt"><input type="checkbox" name="pain" value="find_doctor"> Knowing which type of doctor I needed</label>
+            <label class="opt"><input type="checkbox" name="pain" value="appointment"> Getting an appointment (Termin)</label>
+            <label class="opt"><input type="checkbox" name="pain" value="language"> The language at the practice / on the phone</label>
+            <label class="opt"><input type="checkbox" name="pain" value="insurance"> Understanding what my insurance covered</label>
+            <label class="opt"><input type="checkbox" name="pain" value="paperwork"> Forms and bureaucracy (Überweisung, Krankmeldung…)</label>
+            <label class="opt"><input type="checkbox" name="pain" value="understand_dx"> Understanding the diagnosis or treatment</label>
+            <label class="opt"><input type="checkbox" name="pain" value="none"> Nothing was hard</label>
+          </div>
+        </div>
+
+        <div class="q">
+          <label class="q-label">7. From 1 to 5, how stressful is it for you to see a doctor in Germany? <span class="req">*</span></label>
+          <div class="scale" role="radiogroup">
+            <label><input type="radio" name="stress" value="1" required>1</label>
+            <label><input type="radio" name="stress" value="2">2</label>
+            <label><input type="radio" name="stress" value="3">3</label>
+            <label><input type="radio" name="stress" value="4">4</label>
+            <label><input type="radio" name="stress" value="5">5</label>
+          </div>
+          <div class="scale-ends"><span>No stress at all</span><span>Extremely stressful</span></div>
+        </div>
+
+        <div class="q">
+          <label class="q-label">8. Have you ever avoided or delayed seeing a doctor here because of language or bureaucracy? <span class="req">*</span></label>
+          <div class="opts cols">
+            <label class="opt"><input type="radio" name="avoided" value="often" required> Yes, several times</label>
+            <label class="opt"><input type="radio" name="avoided" value="once"> Yes, once or twice</label>
+            <label class="opt"><input type="radio" name="avoided" value="never"> No, never</label>
+          </div>
+        </div>
+      </div>
+
+      <!-- BLOCK C: WOULD YOU PARTICIPATE? -->
+      <div class="block">
+        <span class="block-tag">C · Would you use it?</span>
+
+        <div class="q">
+          <label class="q-label">9. Imagine an app that explains your insurance, tells you which doctor you need, helps you book, and translates at the appointment — all in your language. Would you use it? <span class="req">*</span></label>
+          <div class="opts">
+            <label class="opt"><input type="radio" name="would_use" value="definitely" required> ✅ Definitely — I need this now</label>
+            <label class="opt"><input type="radio" name="would_use" value="probably"> 👍 Probably — I'd try it</label>
+            <label class="opt"><input type="radio" name="would_use" value="maybe"> 🤔 Maybe — depends how good it is</label>
+            <label class="opt"><input type="radio" name="would_use" value="no"> ❌ No — I don't need it</label>
+          </div>
+        </div>
+
+        <div class="q">
+          <label class="q-label">10. Which feature would be most useful to you? <span class="req">*</span></label>
+          <p class="q-hint">Pick a maximum of 2.</p>
+          <div class="opts">
+            <label class="opt"><input type="checkbox" name="features" value="insurance_explain"> 🧾 Explaining my insurance and what it covers, in my language</label>
+            <label class="opt"><input type="checkbox" name="features" value="which_doctor"> 🧭 Telling me which doctor I need based on my symptoms and helping me book</label>
+            <label class="opt"><input type="checkbox" name="features" value="translation"> 💬 Live medical translation during the appointment</label>
+            <label class="opt"><input type="checkbox" name="features" value="lang_doctors"> 🌍 Finding doctors who speak my language</label>
+            <label class="opt"><input type="checkbox" name="features" value="guides"> 📋 Step-by-step guides (sick note, emergencies, just arrived…)</label>
+          </div>
+        </div>
+
+        <div class="q">
+          <label class="q-label">11. Would you pay for something like this? <span class="req">*</span></label>
+          <div class="opts">
+            <label class="opt"><input type="radio" name="pay" value="no" required> No, I'd only use it if it's free</label>
+            <label class="opt"><input type="radio" name="pay" value="1_3"> Yes, up to €1–3/month</label>
+            <label class="opt"><input type="radio" name="pay" value="4_7"> Yes, €4–7/month</label>
+            <label class="opt"><input type="radio" name="pay" value="per_use"> I'd pay per use (e.g. a one-off live translation)</label>
+            <label class="opt"><input type="radio" name="pay" value="uni_should"> My university or insurance should pay for it</label>
+          </div>
+        </div>
+
+        <div class="q">
+          <label class="q-label">12. Is there anything that happened to you with the healthcare system here that you'd like to share?</label>
+          <p class="q-hint">Optional — one story is worth a thousand statistics.</p>
+          <textarea name="story" placeholder="That time I tried to book an appointment over the phone and…"></textarea>
+        </div>
+      </div>
+
+      <!-- BLOCK D: REAL PARTICIPATION -->
+      <div class="block">
+        <span class="block-tag">D · Be part of it (optional)</span>
+
+        <div class="q">
+          <label class="q-label">13. How would you like to be involved?</label>
+          <p class="q-hint">Check anything that interests you. Leave your email below so we can reach you.</p>
+          <div class="opts">
+            <label class="opt"><input type="checkbox" name="participate" value="waitlist"> 🚀 Put me on the waitlist — I want to try the app first</label>
+            <label class="opt"><input type="checkbox" name="participate" value="beta"> 🧪 I'd be a beta tester and give feedback</label>
+            <label class="opt"><input type="checkbox" name="participate" value="interview"> 💬 I'm up for a short interview (15 min)</label>
+            <label class="opt"><input type="checkbox" name="participate" value="not_interested"> 🙅 Not interested in participating, just answering</label>
+          </div>
+        </div>
+
+        <div class="q">
+          <label class="q-label">Your email</label>
+          <input type="email" name="email" placeholder="you@email.com">
+        </div>
+      </div>
+
+      <div class="submit-zone">
+        <button class="btn" type="submit">Submit answers</button>
+        <p class="submit-note">Anonymous unless you leave your email · Used only for project research</p>
+      </div>
+    </form>
+  </div>
+
+  <!-- THANK YOU -->
+  <div class="thanks" id="thanksView">
+    <div class="stamp">Received ✓</div>
+    <h2>Thank you so much!</h2>
+    <p>Your answers help us build an app that actually works for internationals in Germany. If you left your email, we'll be in touch soon.</p>
+  </div>
+
+</main>
+
+<footer>
+  <div class="wrap">
+    <p>Health Navigator · Student research project · Your data is used solely for the validation of this project and is not shared with third parties (Art. 6 (1)(a) GDPR). You can request deletion at any time.</p>
+  </div>
+</footer>
+
+<script>
+const featBoxes = document.querySelectorAll('input[name="features"]');
+featBoxes.forEach(box=>{
+  box.addEventListener('change',()=>{
+    const checked = document.querySelectorAll('input[name="features"]:checked');
+    if(checked.length > 2){ box.checked = false; }
+  });
+});
+
+const FORMSPREE_ENDPOINT = "https://formspree.io/f/mojzllob";
+
+document.getElementById('survey').addEventListener('submit', async (e)=>{
+  e.preventDefault();
+  const btn = e.target.querySelector('.btn');
+  btn.disabled = true;
+  btn.textContent = "Sending…";
+  try{
+    const response = await fetch(FORMSPREE_ENDPOINT, {
+      method: "POST",
+      body: new FormData(e.target),
+      headers: { "Accept": "application/json" }
+    });
+    if(response.ok){
+      document.getElementById('surveyView').style.display = 'none';
+      document.getElementById('thanksView').style.display = 'block';
+      window.scrollTo({top:0});
+    } else {
+      btn.disabled = false;
+      btn.textContent = "Submit answers";
+      alert("Something went wrong. Please try again.");
+    }
+  } catch(err){
+    btn.disabled = false;
+    btn.textContent = "Submit answers";
+    alert("Connection error. Please check your internet and try again.");
+  }
+});
+</script>
+</body>
+</html>
