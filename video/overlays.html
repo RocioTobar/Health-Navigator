@@ -1,0 +1,236 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Health Navigator · Overlays</title>
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62..125,400..900&family=Instrument+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --paper:#FBFBF7; --ink:#101D2C; --ink-soft:#4A5666; --stamp:#D7372E;
+    --teal:#0E8C7F; --teal-soft:#E3F2F0; --marker:#FFE34D; --line:#D9DCD3;
+    --font-display:'Archivo',sans-serif; --font-body:'Instrument Sans',sans-serif; --font-mono:'IBM Plex Mono',monospace;
+  }
+  *{margin:0;padding:0;box-sizing:border-box}
+  html,body{background:transparent;overflow:hidden}
+  body{font-family:var(--font-body);color:var(--ink);-webkit-font-smoothing:antialiased;position:relative}
+  body.h{width:1920px;height:1080px} body.v{width:1080px;height:1920px}
+  .clip{position:absolute;inset:0;display:none}
+  .mark{display:inline-grid;place-items:center;border-radius:22%;background:var(--teal);color:#fff;font-family:var(--font-display);font-weight:900}
+  .big{font-family:var(--font-display);font-weight:850;font-stretch:108%;letter-spacing:-.025em;line-height:1.02}
+  .hl{background:linear-gradient(transparent 58%,var(--marker) 58%,var(--marker) 94%,transparent 94%);padding:0 6px}
+  .mono{font-family:var(--font-mono);letter-spacing:.06em;text-transform:uppercase}
+  .shadow{box-shadow:0 18px 40px -18px rgba(16,29,44,.45)}
+
+  /* reception bubbles */
+  .says{position:absolute;right:96px;top:110px;width:820px}
+  .say{background:#fff;border:4px solid var(--ink);border-radius:28px;border-top-right-radius:8px;padding:18px 30px;font-family:var(--font-display);font-weight:700;font-size:40px;margin:0 0 18px auto;width:fit-content;max-width:100%;transform-origin:right top}
+  .say u{text-decoration:none;color:var(--stamp)}
+  /* lower third */
+  .l3{position:absolute;left:96px;bottom:96px;display:flex;align-items:center;gap:26px;background:var(--paper);border-radius:24px;padding:24px 40px 24px 26px}
+  .l3 .mark{width:86px;height:86px;font-size:62px}
+  .l3 b{display:block;font-family:var(--font-display);font-weight:800;font-size:50px;letter-spacing:-.015em}
+  .l3 span{display:block;font-size:26px;color:var(--ink-soft);margin-top:2px}
+  /* stat */
+  .stat{position:absolute;left:96px;top:96px;background:var(--paper);border-radius:26px;padding:26px 40px;max-width:760px}
+  .stat .big{font-size:130px}
+  .stat p{font-size:34px;font-weight:600;line-height:1.2;margin-top:6px}
+  .stat small{display:block;font-family:var(--font-mono);font-size:17px;color:var(--ink-soft);margin-top:10px}
+  /* take 2 */
+  .take{position:absolute;inset:0;background:var(--ink);display:flex;flex-direction:column;justify-content:center;align-items:center;color:var(--paper)}
+  .take .mono{font-size:30px;color:#9FB0C2;margin-bottom:20px}
+  .take .big{font-size:230px}
+  .take .stampy{border:8px solid var(--marker);color:var(--marker);border-radius:24px;padding:0 50px 14px}
+  /* side stack (benefits, competition, model) */
+  .side{position:absolute;left:96px;top:96px;width:800px}
+  .side .k{font-size:24px;color:var(--paper);background:var(--teal);display:inline-block;padding:6px 14px;border-radius:8px;margin-bottom:18px;font-weight:600}
+  .pill{display:flex;align-items:center;gap:22px;background:var(--paper);border-radius:22px;padding:18px 28px;margin-bottom:16px;font-family:var(--font-display);font-weight:750;font-size:42px}
+  .pill .ic{width:62px;height:62px;border-radius:50%;background:var(--teal-soft);display:grid;place-items:center;font-size:34px;flex:none}
+  .pill small{display:block;font-family:var(--font-body);font-weight:500;font-size:24px;color:var(--ink-soft)}
+  .pill.no .ic{background:#F7DEDC;color:var(--stamp);font-weight:900}
+  .pill.no{opacity:.92}
+  .pill.yes{background:var(--teal);color:#fff}
+  .pill.yes small{color:#D5EEEB}
+  .pill.yes .ic{background:#fff;color:var(--teal);font-weight:900}
+  .path{display:flex;width:fit-content;white-space:nowrap;align-items:center;gap:14px;background:var(--paper);border-radius:22px;padding:20px 28px;font-family:var(--font-display);font-weight:800;font-size:38px}
+  .path i{font-style:normal;color:var(--teal)}
+  /* end card */
+  .end{position:absolute;inset:0;background:var(--paper);display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center}
+  .end .line{font-family:var(--font-display);font-weight:750;font-size:66px;max-width:1500px;line-height:1.15}
+  .end .logo{display:flex;align-items:center;gap:30px}
+  .end .logo .mark{width:130px;height:130px;font-size:96px}
+  .end .logo .big{font-size:120px}
+  .end .tag{font-family:var(--font-display);font-weight:700;font-size:56px;margin-top:22px}
+  .end .contact{font-family:var(--font-mono);font-size:26px;color:var(--ink-soft);margin-top:40px}
+
+  /* vertical app screens (play full screen on your phone and film it) */
+  .app{position:absolute;inset:0;background:var(--paper)}
+  .ph-top{height:250px;display:flex;align-items:flex-end;gap:24px;padding:0 64px 36px;border-bottom:3px solid var(--line);font-family:var(--font-display);font-weight:800;font-size:58px}
+  .ph-top .mark{width:92px;height:92px;font-size:64px}
+  .scr{position:absolute;top:250px;left:0;right:0;bottom:0;padding:60px 56px}
+  .scr .tag{font-family:var(--font-mono);font-size:34px;letter-spacing:.08em;text-transform:uppercase;color:var(--teal);font-weight:600;margin-bottom:40px}
+  .bub{border-radius:46px;padding:36px 44px;font-size:52px;line-height:1.3;margin-bottom:34px;max-width:88%}
+  .bub.me{background:var(--ink);color:#fff;margin-left:auto;border-bottom-right-radius:12px}
+  .bub.hn{background:#fff;border:4px solid var(--line);border-bottom-left-radius:12px}
+  .bub.hn b{color:var(--teal)}
+  .slot{display:inline-block;border:4px solid var(--teal);color:var(--teal);border-radius:22px;padding:14px 26px;font-family:var(--font-mono);font-size:40px;font-weight:600;margin:20px 16px 0 0}
+  .slot.on{background:var(--teal);color:#fff}
+  .tr{background:#fff;border:4px solid var(--line);border-radius:42px;padding:40px 44px;margin-bottom:36px}
+  .tr .lang{font-family:var(--font-mono);font-size:32px;color:var(--ink-soft);margin-bottom:12px}
+  .tr .t{font-family:var(--font-display);font-weight:750;font-size:64px;line-height:1.15}
+  .tr.out{border-color:var(--teal);background:var(--teal-soft)}
+  .wave{display:flex;gap:14px;align-items:center;height:140px;justify-content:center;margin:10px 0 36px}
+  .wave i{width:18px;border-radius:9px;background:var(--teal)}
+  .step{display:flex;gap:32px;align-items:center;font-size:52px;padding:36px 0;border-bottom:3px solid var(--line)}
+  .step .c{width:84px;height:84px;border-radius:50%;border:6px solid var(--teal);display:grid;place-items:center;color:#fff;font-weight:900;font-size:46px;flex:none}
+  .step.done .c{background:var(--teal)}
+</style>
+</head>
+<body>
+
+<div class="clip h" id="recepcion" data-dur="9">
+  <div class="says" data-fx="shake" data-t="5.5"><div data-fx="blur" data-t="6.6">
+    <div class="say shadow" data-fx="pop" data-t="0.6">Guten Tag! Haben Sie einen <u>Termin</u>?</div>
+    <div class="say shadow" data-fx="pop" data-t="1.9"><u>Versichertenkarte</u>, bitte.</div>
+    <div class="say shadow" data-fx="pop" data-t="3.0"><u>Gesetzlich</u> oder <u>privat</u>?</div>
+    <div class="say shadow" data-fx="pop" data-t="4.0">Haben Sie eine <u>Überweisung</u> vom <u>Hausarzt</u>?</div>
+    <div class="say shadow" data-fx="pop" data-t="4.9">Brauchen Sie auch eine <u>Krankmeldung</u>?</div>
+  </div></div>
+</div>
+
+<div class="clip h" id="nombre" data-dur="5">
+  <div class="l3 shadow" data-fx="left" data-t="0.2" data-out="4.5">
+    <span class="mark">+</span>
+    <div><b data-cfg="name"></b><span data-cfg="bio"></span></div>
+  </div>
+</div>
+
+<div class="clip h" id="dato-400k" data-dur="5">
+  <div class="stat shadow" data-fx="up" data-t="0.2" data-out="4.5">
+    <div class="big"><span data-count="400000" data-t="0.3" data-dur="1.6"></span>+</div>
+    <p>international students in Germany. Many just stop going to the doctor.</p>
+    <small>DAAD / DZHW · Wissenschaft weltoffen 2025 · WS 2024/25</small>
+  </div>
+</div>
+
+<div class="clip h" id="toma-2" data-dur="2.5">
+  <div class="take" data-fx="fade" data-t="0" data-out="2.2">
+    <div class="mono" data-fx="up" data-t="0.15">Same scene. Same words.</div>
+    <div class="big stampy" data-fx="stamp" data-t="0.5" data-rot="-4">Take 2.</div>
+  </div>
+</div>
+
+<div class="clip h" id="beneficios" data-dur="14">
+  <div class="side">
+    <div class="pill shadow" data-fx="left" data-t="0.4" data-out="13.4"><span class="ic">🧾</span><div>Your insurance, explained<small>what's covered, before you go</small></div></div>
+    <div class="pill shadow" data-fx="left" data-t="3.4" data-out="13.4"><span class="ic">🧭</span><div>The right doctor, booked<small>from your symptoms to a Termin</small></div></div>
+    <div class="pill shadow" data-fx="left" data-t="6.6" data-out="13.4"><span class="ic">💬</span><div>Live medical translation<small>during the consultation</small></div></div>
+    <div class="pill shadow" data-fx="left" data-t="9.8" data-out="13.4"><span class="ic">📋</span><div>Paperwork, step by step<small>Überweisung, Krankmeldung…</small></div></div>
+  </div>
+</div>
+
+<div class="clip h" id="competencia" data-dur="9">
+  <div class="side">
+    <div class="pill no shadow" data-fx="left" data-t="0.3" data-out="8.4"><span class="ic">✕</span><div>Translator apps<small>know words, not medicine</small></div></div>
+    <div class="pill no shadow" data-fx="left" data-t="1.9" data-out="8.4"><span class="ic">✕</span><div>Doctolib<small>books a slot, explains nothing</small></div></div>
+    <div class="pill no shadow" data-fx="left" data-t="3.5" data-out="8.4"><span class="ic">✕</span><div>Insurer apps<small>only know their own policy</small></div></div>
+    <div class="pill yes shadow" data-fx="pop" data-t="5.3" data-out="8.4"><span class="ic">✓</span><div>Health Navigator<small>one companion for the whole visit, in your language</small></div></div>
+  </div>
+</div>
+
+<div class="clip h" id="modelo" data-dur="8">
+  <div class="side">
+    <div class="pill shadow" data-fx="left" data-t="0.3" data-out="7.4"><span class="ic">0€</span><div>Free for students<small>guides & insurance basics</small></div></div>
+    <div class="pill shadow" data-fx="left" data-t="1.5" data-out="7.4"><span class="ic">★</span><div><span data-cfg="price"></span> / month Premium<small>booking help & unlimited translation</small></div></div>
+    <div class="pill shadow" data-fx="left" data-t="2.7" data-out="7.4"><span class="ic">🏛</span><div>Licenses<small>universities & insurers pay for their internationals</small></div></div>
+    <div class="path shadow" data-fx="up" data-t="4.4" data-out="7.4"><span data-cfg="city"></span><i>→</i>NRW<i>→</i>Germany<i>→</i>Expat workers</div>
+  </div>
+</div>
+
+<div class="clip h" id="cierre" data-dur="5.5">
+  <div class="end" data-fx="fade" data-t="0">
+    <div class="line" data-fx="up" data-t="0.2" data-out="2.6">Nobody should have to nod<br>without <span class="hl">understanding.</span></div>
+    <div style="position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center" data-fx="up" data-t="3.0">
+      <div class="logo"><span class="mark">+</span><span class="big">Health Navigator</span></div>
+      <div class="tag"><span class="hl">Healthcare in your language.</span></div>
+      <div class="contact" data-cfg="contact"></div>
+    </div>
+  </div>
+</div>
+
+<!-- vertical: play this full screen on your phone and film the phone -->
+<div class="clip v" id="app-movil" data-dur="16">
+  <div class="app">
+    <div class="ph-top"><span class="mark">+</span>Health Navigator</div>
+    <div class="scr" data-win="0,4">
+      <div class="tag">Your insurance</div>
+      <div class="bub me" data-fx="pop" data-t="0.3">¿Mi seguro cubre la revisión del dentista?</div>
+      <div class="bub hn" data-fx="pop" data-t="1.3"><b>Sí ✓</b> Tu seguro público cubre una revisión dental cada 6 meses. Solo lleva tu tarjeta.</div>
+    </div>
+    <div class="scr" data-win="4,8">
+      <div class="tag">Right doctor + booking</div>
+      <div class="bub me" data-fx="pop" data-t="4.3">Dolor de oído hace 2 días, un poco de fiebre</div>
+      <div class="bub hn" data-fx="pop" data-t="5.2">Necesitas un <b>otorrino (HNO)</b>. 3 consultas con citas mañana:
+        <div><span class="slot">08:30</span><span class="slot on" data-fx="pop" data-t="6.4">10:15 ✓</span><span class="slot">16:00</span></div></div>
+    </div>
+    <div class="scr" data-win="8,12">
+      <div class="tag">Live translation</div>
+      <div class="tr" data-fx="pop" data-t="8.3"><div class="lang">DE · Ärztin</div><div class="t">Haben Sie Allergien gegen Medikamente?</div></div>
+      <div class="wave" id="wave"></div>
+      <div class="tr out" data-fx="pop" data-t="9.4"><div class="lang">ES · Tú</div><div class="t">¿Tiene alergia a algún medicamento?</div></div>
+    </div>
+    <div class="scr" data-win="12,16.5">
+      <div class="tag">Guide · Krankmeldung</div>
+      <div class="step done" data-fx="pop" data-t="12.3"><span class="c">✓</span>Avisa antes de las 9:00</div>
+      <div class="step done" data-fx="pop" data-t="12.8"><span class="c">✓</span>Ve al médico el día 1</div>
+      <div class="step" data-fx="pop" data-t="13.3"><span class="c"></span>Envía la AU a tu empresa</div>
+    </div>
+  </div>
+</div>
+
+<script>
+/* ======================= EDIT HERE ======================= */
+const CONFIG = {
+  name: 'Rocío [Apellido]',
+  bio: 'Founder · [Degree], Bergische Universität Wuppertal',
+  price: '€2.99',
+  city: 'Wuppertal',
+  contact: 'healthnavigator@[domain] · [instagram/website]',
+};
+/* ========================================================= */
+const q = new URLSearchParams(location.search);
+const clip = document.getElementById(q.get('clip') || 'recepcion');
+clip.style.display = 'block';
+document.body.className = clip.classList.contains('v') ? 'v' : 'h';
+document.querySelectorAll('[data-cfg]').forEach(e => e.textContent = CONFIG[e.dataset.cfg]);
+document.getElementById('wave').innerHTML = Array.from({length:22},()=>'<i></i>').join('');
+window.DURATION = +clip.dataset.dur;
+window.SIZE = document.body.className === 'v' ? [1080,1920] : [1920,1080];
+
+const clamp=(x,a=0,b=1)=>Math.min(b,Math.max(a,x));
+const easeOut=x=>1-Math.pow(1-x,3);
+const easeBack=x=>{const c=1.7;return 1+(c+1)*Math.pow(x-1,3)+c*Math.pow(x-1,2)};
+const fx=[...clip.querySelectorAll('[data-fx]')], wins=[...clip.querySelectorAll('[data-win]')], counts=[...clip.querySelectorAll('[data-count]')];
+
+function render(t){
+  for(const e of fx){
+    const p=clamp((t-(+e.dataset.t))/0.6), q=easeOut(p);
+    const out = e.dataset.out ? 1-easeOut(clamp((t-(+e.dataset.out))/0.4)) : 1;
+    switch(e.dataset.fx){
+      case 'fade': e.style.opacity=q*out; break;
+      case 'up': e.style.opacity=q*out; e.style.transform=`translateY(${(1-q)*50 + (1-out)*20}px)`; break;
+      case 'left': e.style.opacity=q*out; e.style.transform=`translateX(${(q-1)*80 - (1-out)*40}px)`; break;
+      case 'pop': {const k=easeBack(clamp((t-(+e.dataset.t))/0.45)); e.style.opacity=clamp(p*2)*out; e.style.transform=`scale(${0.7+0.3*k})`; break;}
+      case 'stamp': {const k=clamp((t-(+e.dataset.t))/0.25); e.style.opacity=k*out; e.style.transform=`rotate(${e.dataset.rot}deg) scale(${1.8-0.8*easeOut(k)})`; break;}
+      case 'shake': {const a=clamp((t-(+e.dataset.t))/1.2)*9; e.style.transform=`translate(${Math.sin(t*53)*a}px,${Math.cos(t*41)*a}px)`; break;}
+      case 'blur': {const k=clamp((t-(+e.dataset.t))/1.2); e.style.filter=`blur(${k*12}px)`; e.style.opacity=1-k; break;}
+    }
+  }
+  for(const w of wins){const [a,b]=w.dataset.win.split(',').map(Number); w.style.opacity=clamp((t-a)/0.25)*clamp((b-t)/0.25);}
+  for(const c of counts){const p=easeOut(clamp((t-(+c.dataset.t))/(+c.dataset.dur))); c.textContent=(Math.round(400000*p/1000)*1000).toLocaleString('en-US');}
+  document.querySelectorAll('#wave i').forEach((b,i)=>{b.style.height=(28+Math.abs(Math.sin(t*7+i*0.7))*100*Math.abs(Math.sin(i*1.3+t)))+'px'});
+}
+window.render=render;
+if(!q.get('render')){const t0=performance.now();(function loop(){render(((performance.now()-t0)/1000)%DURATION);requestAnimationFrame(loop)})();} else render(0);
+</script>
+</body>
+</html>
