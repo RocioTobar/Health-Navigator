@@ -97,7 +97,8 @@
   #s6 .big{font-size:76px;margin:18px 0 40px}
   .tiers{display:flex;gap:26px;width:1020px;margin-top:70px}
   .tier{min-height:330px}
-  .tier .pr small{font-size:30px;font-weight:700;color:var(--ink-soft)}
+  .tier .pr{white-space:nowrap}
+  .tier .pr small{display:block;font-size:26px;font-weight:700;color:var(--ink-soft);margin-top:4px}
   .tier{flex:1;background:#fff;border:3px solid var(--line);border-radius:26px;padding:30px 30px}
   .tier .nm{font-family:var(--font-mono);font-size:21px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:var(--ink-soft)}
   .tier .pr{font-family:var(--font-display);font-weight:850;font-size:64px;margin:6px 0 10px;letter-spacing:-.02em}
@@ -292,7 +293,7 @@ const fill = s => s.replaceAll('{city}', CONFIG.city);
 document.documentElement.lang = CONFIG.lang;
 document.querySelectorAll('[data-i18n]').forEach(e => e.textContent = fill(L[e.dataset.i18n]));
 document.querySelectorAll('[data-html]').forEach(e => e.innerHTML = fill(L[e.dataset.html]));
-document.getElementById('price').innerHTML = (CONFIG.lang==='de' ? CONFIG.price.replace('€','').replace('.',',')+' €' : CONFIG.price) + `<small>${CONFIG.lang==='de'?'/Monat':'/month'}</small>`;
+document.getElementById('price').innerHTML = (CONFIG.lang==='de' ? CONFIG.price.replace('€','').replace('.',',')+'\u00a0€' : CONFIG.price) + `<small>${CONFIG.lang==='de'?'/Monat':'/month'}</small>`;
 document.getElementById('contact').textContent = CONFIG.contact;
 
 // S1 chips
