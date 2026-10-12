@@ -12,7 +12,7 @@ const FPS = 30, DURATION = 60;
 
 const browser = await chromium.launch(process.env.CHROMIUM ? { executablePath: process.env.CHROMIUM } : {});
 const page = await browser.newPage({ viewport: { width: 1920, height: 1080 } });
-await page.goto(`file://${path.join(dir, 'pitch.html')}?render=1&lang=${lang}`);
+await page.goto(`file://${path.join(dir, process.env.PAGE || 'pitch.html')}?render=1&lang=${lang}`);
 await page.evaluate(() => document.fonts.ready);
 
 if (process.argv[3] === '--stills') {

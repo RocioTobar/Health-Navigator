@@ -1,0 +1,444 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Health Navigator · Pitch video v3</title>
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62..125,400..900&family=Instrument+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --paper:#FBFBF7; --ink:#101D2C; --ink-soft:#4A5666; --stamp:#D7372E;
+    --teal:#0E8C7F; --teal-deep:#0A6E64; --teal-soft:#E3F2F0; --marker:#FFE34D; --line:#D9DCD3; --sky:#7FC3EA;
+    --font-display:'Archivo',sans-serif; --font-body:'Instrument Sans',sans-serif; --font-mono:'IBM Plex Mono',monospace;
+  }
+  *{margin:0;padding:0;box-sizing:border-box}
+  html,body{width:1920px;height:1080px;overflow:hidden;background:var(--paper)}
+  body{font-family:var(--font-body);color:var(--ink);-webkit-font-smoothing:antialiased;position:relative}
+  .scene{position:absolute;inset:0;overflow:hidden;display:none}
+  .pad{position:absolute;inset:0;padding:100px 140px}
+  .kicker{font-family:var(--font-mono);font-size:26px;letter-spacing:.12em;text-transform:uppercase;font-weight:600;display:flex;align-items:center;gap:16px}
+  .kicker::before{content:"";width:46px;height:3px;background:currentColor}
+  .big{font-family:var(--font-display);font-weight:900;font-stretch:112%;letter-spacing:-.03em;line-height:.98}
+  .hl{background:linear-gradient(transparent 55%,var(--marker) 55%,var(--marker) 92%,transparent 92%);padding:0 8px;color:var(--ink)}
+  .hl-solid{background:var(--marker);color:var(--ink);padding:0 18px;border-radius:12px}
+  .hl-ink{background:var(--ink);color:var(--marker);padding:0 18px;border-radius:12px}
+  .mark{display:inline-grid;place-items:center;border-radius:24%;background:var(--teal);color:#fff;font-family:var(--font-display);font-weight:900}
+  .abs{position:absolute}
+  .decor{position:absolute;inset:0;pointer-events:none}
+  .decor i{position:absolute;font-style:normal;font-family:var(--font-display);font-weight:900}
+  [data-fx]{will-change:transform,opacity}
+  .sticker{background:var(--paper);border-radius:26px;box-shadow:0 14px 0 rgba(0,0,0,.18)}
+
+  /* S1 reception */
+  #s1{background:#FFF1DA}
+  #s1 .wall{position:absolute;left:0;right:0;top:0;height:760px;background:repeating-linear-gradient(90deg,#FFE9C4 0 120px,#FFF1DA 120px 240px)}
+  #s1 .sign{position:absolute;left:1300px;top:90px;background:var(--teal);color:#fff;font-family:var(--font-mono);font-weight:600;font-size:28px;letter-spacing:.14em;padding:14px 28px;border-radius:12px}
+  #s1 .sign b{display:block;font-family:var(--font-display);font-size:44px;letter-spacing:0;font-weight:850}
+  #s1 .counter{position:absolute;left:980px;right:0;top:760px;height:320px;background:var(--teal);border-top:26px solid var(--ink)}
+  #s1 .floor{position:absolute;left:0;right:0;top:760px;bottom:0;background:#F2D9B0}
+  .bub{position:absolute;background:#fff;border:5px solid var(--ink);border-radius:34px;padding:18px 30px;font-family:var(--font-display);font-weight:750;font-size:40px;white-space:nowrap;box-shadow:8px 8px 0 var(--ink);transform-origin:right bottom}
+  .bub u{text-decoration:none;color:var(--stamp)}
+  .qmark{position:absolute;font-family:var(--font-display);font-weight:900;font-size:150px;color:var(--stamp)}
+  #blank{position:absolute;inset:0;background:var(--ink);clip-path:circle(0px at 420px 420px)}
+  #blank .float{position:absolute;font-family:var(--font-mono);font-weight:600;font-size:34px;color:rgba(251,251,247,.16);text-transform:uppercase;letter-spacing:.08em}
+  /* S2 team */
+  #s2{background:var(--teal)}
+  #s2 .hi{font-size:170px;color:var(--paper)}
+  #s2 .bio{font-size:40px;color:var(--teal-soft);font-weight:600;margin-top:24px;max-width:900px;line-height:1.25}
+  #s2 .wm{display:flex;align-items:center;gap:22px;margin-top:70px;background:var(--paper);border-radius:22px;padding:18px 30px 18px 18px;width:fit-content}
+  #s2 .wm .mark{width:84px;height:84px;font-size:60px}
+  #s2 .wm span:last-child{font-family:var(--font-display);font-weight:850;font-size:54px;letter-spacing:-.02em}
+  #s2 .tag{display:inline-block;margin-top:22px;font-family:var(--font-display);font-weight:800;font-size:42px}
+  /* S3 problem */
+  #s3{background:var(--ink);color:var(--paper)}
+  #s3 .num{font-size:190px;color:var(--marker)}
+  #s3 .lbl{font-size:46px;font-weight:600;margin-top:18px;max-width:900px;line-height:1.2}
+  #s3 .src{font-family:var(--font-mono);font-size:20px;color:#8C9AAB;margin-top:16px}
+  .barrier{position:absolute;width:520px;padding:24px 30px;display:flex;align-items:center;gap:22px;color:var(--ink);font-family:var(--font-display);font-weight:800;font-size:46px}
+  .barrier .x{width:58px;height:58px;border-radius:50%;background:var(--stamp);color:#fff;display:grid;place-items:center;font-size:34px;font-weight:900;flex:none}
+  .barrier small{display:block;font-family:var(--font-body);font-weight:500;font-size:24px;color:var(--ink-soft)}
+  #s3 .punch{position:absolute;left:140px;bottom:150px;font-size:76px}
+  /* S4 solution */
+  #s4{background:var(--paper)}
+  #s4 .blob{position:absolute;left:330px;top:120px;width:860px;height:860px;border-radius:50%;background:var(--teal-soft)}
+  .phone{position:absolute;left:570px;top:110px;width:430px;height:860px;border-radius:64px;background:var(--ink);padding:16px;box-shadow:24px 24px 0 var(--teal)}
+  .screen{position:absolute;inset:16px;border-radius:50px;background:var(--paper);overflow:hidden}
+  .ph-top{height:104px;display:flex;align-items:flex-end;gap:12px;padding:0 28px 16px;border-bottom:2px solid var(--line);font-family:var(--font-display);font-weight:800;font-size:26px}
+  .ph-top .mark{width:42px;height:42px;font-size:28px}
+  .ph-body{position:absolute;top:104px;left:0;right:0;bottom:0}
+  .app{position:absolute;inset:0;padding:26px 24px;opacity:0}
+  .app .tag{font-family:var(--font-mono);font-size:16px;letter-spacing:.08em;text-transform:uppercase;color:var(--teal);font-weight:600;margin-bottom:16px}
+  .pb{border-radius:22px;padding:16px 20px;font-size:23px;line-height:1.3;margin-bottom:14px;max-width:90%}
+  .pb.me{background:var(--ink);color:#fff;margin-left:auto;border-bottom-right-radius:6px}
+  .pb.hn{background:#fff;border:2px solid var(--line);border-bottom-left-radius:6px}
+  .pb.hn b{color:var(--teal)}
+  .slot{display:inline-block;border:2px solid var(--teal);color:var(--teal);border-radius:12px;padding:6px 12px;font-family:var(--font-mono);font-size:19px;font-weight:600;margin:8px 8px 0 0}
+  .slot.on{background:var(--teal);color:#fff}
+  .tr{background:#fff;border:2px solid var(--line);border-radius:20px;padding:18px 20px;margin-bottom:16px}
+  .tr .lang{font-family:var(--font-mono);font-size:16px;color:var(--ink-soft);margin-bottom:6px}
+  .tr .t{font-family:var(--font-display);font-weight:750;font-size:30px}
+  .tr.out{border-color:var(--teal);background:var(--teal-soft)}
+  .wave{display:flex;gap:6px;align-items:center;height:64px;justify-content:center;margin:4px 0 16px}
+  .wave i{width:9px;border-radius:5px;background:var(--teal)}
+  .step{display:flex;gap:14px;align-items:center;font-size:23px;padding:14px 0;border-bottom:2px solid var(--line)}
+  .step .c{width:40px;height:40px;border-radius:50%;border:3px solid var(--teal);display:grid;place-items:center;color:#fff;font-weight:900;font-size:22px;flex:none}
+  .step.done .c{background:var(--teal)}
+  .feats{position:absolute;left:1060px;top:120px;right:120px}
+  #s4 .big{font-size:84px;margin-bottom:40px}
+  .feat{display:flex;align-items:center;gap:24px;padding:20px 26px;border-radius:24px;font-family:var(--font-display);font-weight:800;font-size:42px;margin-bottom:14px;color:#A3ABB5;border:4px solid transparent}
+  .feat .ic{width:66px;height:66px;border-radius:50%;background:var(--line);display:grid;place-items:center;font-size:34px;flex:none}
+  .feat.on{background:var(--ink);color:var(--paper);box-shadow:10px 10px 0 var(--marker)}
+  .feat.on .ic{background:var(--marker)}
+  .langs{display:flex;gap:10px;margin-top:26px}
+  .langs span{font-family:var(--font-mono);font-weight:600;font-size:22px;background:var(--ink);color:var(--paper);border-radius:10px;padding:6px 12px}
+  /* S5 USP */
+  #s5{background:var(--marker)}
+  #s5 .big{font-size:96px;margin:16px 0 40px}
+  #s5 .big em{font-style:normal;background:var(--ink);color:var(--marker);padding:0 16px;border-radius:14px}
+  .vs{display:flex;gap:28px;align-items:stretch}
+  .card{flex:1;padding:30px 30px 34px;border-radius:30px;background:var(--paper);box-shadow:12px 12px 0 var(--ink);border:4px solid var(--ink)}
+  .card h3{font-family:var(--font-display);font-size:44px;font-weight:850;letter-spacing:-.015em}
+  .card .does{font-size:27px;color:var(--ink-soft);margin:6px 0 20px;min-height:72px;line-height:1.3}
+  .card ul{list-style:none;font-size:27px;font-weight:600}
+  .card li{display:flex;gap:12px;align-items:center;padding:7px 0}
+  .card li b{width:36px;height:36px;border-radius:50%;display:grid;place-items:center;font-size:20px;flex:none;color:#fff}
+  .card li.y b{background:var(--teal)} .card li.n b{background:#C9CDC4} .card li.n{color:#9AA1AA}
+  .card.us{background:var(--teal);color:#fff;transform-origin:center}
+  .card.us .does{color:#D5EEEB} .card.us li.y b{background:var(--marker);color:var(--ink)}
+  /* S6 business */
+  #s6{background:var(--paper)}
+  #s6 .big{font-size:72px;margin:16px 0 50px}
+  .tiers{display:flex;gap:28px;width:1060px}
+  .tier{flex:1;border-radius:30px;padding:30px;min-height:360px;border:4px solid var(--ink);box-shadow:12px 12px 0 var(--ink)}
+  .tier .nm{font-family:var(--font-mono);font-size:21px;font-weight:600;letter-spacing:.08em;text-transform:uppercase}
+  .tier .pr{font-family:var(--font-display);font-weight:900;font-size:72px;margin:8px 0 12px;letter-spacing:-.02em;white-space:nowrap}
+  .tier .pr small{display:block;font-size:26px;font-weight:700;opacity:.75}
+  .tier p{font-size:26px;line-height:1.3}
+  .t1{background:#fff} .t2{background:var(--teal);color:#fff} .t3{background:var(--ink);color:var(--paper)}
+  .t3 .nm{color:var(--marker)}
+  .growth{position:absolute;left:1300px;top:370px;width:520px}
+  .growth .gt{font-family:var(--font-mono);font-size:22px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:var(--teal);margin-bottom:16px}
+  .gstep{display:flex;align-items:center;gap:22px;padding:14px 0}
+  .gstep .dot{border-radius:50%;background:var(--teal);flex:none;display:grid;place-items:center;color:#fff;font-family:var(--font-display);font-weight:900}
+  .gstep b{font-family:var(--font-display);font-size:44px;font-weight:850;display:block;letter-spacing:-.01em}
+  .gstep span{font-size:23px;color:var(--ink-soft)}
+  /* S7 outro */
+  #s7{background:var(--ink);color:var(--paper)}
+  #s7 .logo{display:flex;align-items:center;gap:30px}
+  #s7 .logo .mark{width:110px;height:110px;font-size:80px}
+  #s7 .logo .big{font-size:92px;white-space:nowrap}
+  #s7 .tag{font-family:var(--font-display);font-weight:800;font-size:60px;margin-top:34px}
+  #s7 .contact{font-family:var(--font-mono);font-size:28px;color:#8C9AAB;margin-top:44px}
+  /* rail */
+  #rail{position:absolute;left:140px;right:140px;bottom:34px;display:flex;gap:12px;background:rgba(251,251,247,.92);border-radius:16px;padding:12px 18px;z-index:50}
+  #rail .seg{flex:1;font-family:var(--font-mono);font-size:17px;color:var(--ink-soft)}
+  #rail .bar{height:6px;border-radius:3px;background:var(--line);margin-bottom:8px;overflow:hidden}
+  #rail .fill{height:100%;width:0;background:var(--teal)}
+  #rail .seg.on{color:var(--ink);font-weight:600}
+</style>
+</head>
+<body>
+
+<!-- S1 · reception, going blank -->
+<section class="scene" id="s1" data-start="0" data-end="6">
+  <div class="wall"></div><div class="floor"></div>
+  <div class="sign" data-fx="drop" data-t="0">PRAXIS DR. MÜLLER<b>Anmeldung</b></div>
+  <div class="abs" style="left:1320px;top:330px" data-fx="up" data-t="0.1"><div data-avatar="recep" data-scale="1.05"></div></div>
+  <div class="counter"></div>
+  <div class="abs" style="left:150px;top:340px" data-fx="up" data-t="0.2"><div data-avatar="me" data-scale="1.5" id="me1"></div></div>
+  <div id="bubs" data-fx="shake" data-t="2.2"><div data-fx="blur" data-t="3.0">
+    <div class="bub" style="right:620px;top:120px" data-fx="pop" data-t="0.45">Guten Tag! <u>Termin</u>?</div>
+    <div class="bub" style="right:660px;top:240px" data-fx="pop" data-t="1.05"><u>Versichertenkarte</u>, bitte!</div>
+    <div class="bub" style="right:630px;top:360px" data-fx="pop" data-t="1.6"><u>Gesetzlich</u> oder <u>privat</u>?</div>
+    <div class="bub" style="right:600px;top:480px" data-fx="pop" data-t="2.1"><u>Überweisung</u> vom <u>Hausarzt</u>?</div>
+    <div class="bub" style="right:640px;top:600px" data-fx="pop" data-t="2.55">Und die <u>Krankmeldung</u>?!</div>
+  </div></div>
+  <div class="qmark" style="left:520px;top:60px" data-fx="pop" data-t="3.2">?</div>
+  <div class="qmark" style="left:610px;top:150px;font-size:100px" data-fx="pop" data-t="3.4">?</div>
+  <div id="blank">
+    <div id="floats"></div>
+    <div class="abs" style="left:140px;top:250px">
+      <div class="big" style="font-size:210px;color:var(--marker)" data-fx="up" data-t="4.0">Total blank.</div>
+      <div class="big" style="font-size:76px;color:var(--paper);margin-top:34px" data-fx="up" data-t="4.6">Every word feels like a wall.</div>
+    </div>
+  </div>
+</section>
+
+<!-- S2 · Hi, I'm Rocío -->
+<section class="scene" id="s2" data-start="6" data-end="12" data-from="1300,520">
+  <div class="decor" data-decor="#13A394"></div>
+  <div class="pad">
+    <div class="kicker" style="color:var(--marker)" data-fx="fade" data-t="0.2"><span>Start-up · <span data-cfg="city"></span>, Germany</span></div>
+    <div class="big hi" style="margin-top:40px" data-fx="up" data-t="0.3">Hi, I'm <span data-cfg="first"></span>.</div>
+    <div class="bio" data-fx="up" data-t="0.8" data-cfg="bio"></div>
+    <div class="wm" data-fx="pop" data-t="1.6"><span class="mark">+</span><span>Health Navigator</span></div>
+    <div class="tag" data-fx="up" data-t="2.1"><span class="hl-ink">German healthcare, in your language.</span></div>
+  </div>
+  <div class="abs" style="left:1060px;top:200px" data-fx="up" data-t="0.1"><div data-avatar="me" data-scale="1.95" id="me2"></div></div>
+</section>
+
+<!-- S3 · problem -->
+<section class="scene" id="s3" data-start="12" data-end="22" data-from="960,1080">
+  <div class="pad">
+    <div class="kicker" style="color:var(--marker)" data-fx="fade" data-t="0.2">The problem</div>
+    <div class="big num" style="margin-top:30px" data-fx="up" data-t="0.2"><span data-count="400000" data-t="0.2" data-dur="2"></span>+</div>
+    <div class="lbl" data-fx="up" data-t="0.6">international students in Germany. Plus millions of international workers.</div>
+    <div class="src" data-fx="fade" data-t="1.4">DAAD / DZHW · Wissenschaft weltoffen 2025 · WS 2024/25</div>
+  </div>
+  <div class="barrier sticker" style="left:1240px;top:110px" data-fx="stamp" data-rot="-4" data-t="3.0"><span class="x">✕</span><div>Language<small>at the practice & on the phone</small></div></div>
+  <div class="barrier sticker" style="left:1300px;top:290px" data-fx="stamp" data-rot="3" data-t="3.5"><span class="x">✕</span><div>Termin<small>getting an appointment</small></div></div>
+  <div class="barrier sticker" style="left:1220px;top:470px" data-fx="stamp" data-rot="-2" data-t="4.0"><span class="x">✕</span><div>Insurance<small>what is actually covered?</small></div></div>
+  <div class="barrier sticker" style="left:1290px;top:650px" data-fx="stamp" data-rot="4" data-t="4.5"><span class="x">✕</span><div>Paperwork<small>Überweisung, Krankmeldung…</small></div></div>
+  <div class="big punch" data-fx="up" data-t="6.2">Many <span class="hl">put off seeing a doctor.</span></div>
+</section>
+
+<!-- S4 · solution -->
+<section class="scene" id="s4" data-start="22" data-end="34" data-from="680,540">
+  <div class="blob" data-fx="pop" data-t="0"></div>
+  <div class="abs" style="left:40px;top:470px" data-fx="up" data-t="0.5"><div data-avatar="me" data-scale="1.05" id="me4"></div></div>
+  <div class="phone" data-fx="phone" data-t="0.1">
+    <div class="screen">
+      <div class="ph-top"><span class="mark">+</span>Health Navigator</div>
+      <div class="ph-body">
+        <div class="app" data-win="1.0,3.6">
+          <div class="tag">Your insurance</div>
+          <div class="pb me" data-fx="pop" data-t="1.2">¿Mi seguro cubre la revisión del dentista?</div>
+          <div class="pb hn" data-fx="pop" data-t="2.0"><b>Sí ✓</b> Tu seguro público cubre una revisión dental cada 6 meses.</div>
+        </div>
+        <div class="app" data-win="3.6,6.2">
+          <div class="tag">Right doctor + booking</div>
+          <div class="pb me" data-fx="pop" data-t="3.8">Ear pain for 2 days, a bit of fever</div>
+          <div class="pb hn" data-fx="pop" data-t="4.5">You need an <b>ENT doctor (HNO)</b>. Slots tomorrow:
+            <div><span class="slot">08:30</span><span class="slot on" data-fx="pop" data-t="5.4">10:15 ✓</span></div></div>
+        </div>
+        <div class="app" data-win="6.2,8.9">
+          <div class="tag">Live translation</div>
+          <div class="tr" data-fx="pop" data-t="6.4"><div class="lang">DE · Ärztin</div><div class="t">Haben Sie Allergien?</div></div>
+          <div class="wave" id="wave"></div>
+          <div class="tr out" data-fx="pop" data-t="7.3"><div class="lang">ES · Tú</div><div class="t">¿Tiene alergias?</div></div>
+        </div>
+        <div class="app" data-win="8.9,12.5">
+          <div class="tag">Guide · Sick note</div>
+          <div class="step done" data-fx="pop" data-t="9.1"><span class="c">✓</span>Call in sick before 9:00</div>
+          <div class="step done" data-fx="pop" data-t="9.5"><span class="c">✓</span>See a doctor on day 1</div>
+          <div class="step" data-fx="pop" data-t="9.9"><span class="c"></span>Send the AU to your employer</div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="feats">
+    <div class="big" data-fx="up" data-t="0.2">One app for the <span class="hl">whole journey.</span></div>
+    <div class="feat" data-on="1.0,3.6" data-fx="left" data-t="0.5"><span class="ic">🧾</span>Insurance, explained</div>
+    <div class="feat" data-on="3.6,6.2" data-fx="left" data-t="0.65"><span class="ic">🧭</span>Right doctor + booking</div>
+    <div class="feat" data-on="6.2,8.9" data-fx="left" data-t="0.8"><span class="ic">💬</span>Live medical translation</div>
+    <div class="feat" data-on="8.9,12" data-fx="left" data-t="0.95"><span class="ic">📋</span>Step-by-step guides</div>
+    <div class="langs" data-fx="up" data-t="1.4"><span>ES</span><span>EN</span><span>AR</span><span>TR</span><span>UK</span><span>HI</span><span>ZH</span><span>+</span></div>
+  </div>
+</section>
+
+<!-- S5 · USP -->
+<section class="scene" id="s5" data-start="34" data-end="44" data-from="1700,200">
+  <div class="pad">
+    <div class="kicker" data-fx="fade" data-t="0.2">Why us</div>
+    <div class="big" data-fx="up" data-t="0.2">Others solve one step. <em>We guide all of them.</em></div>
+    <div class="vs">
+      <div class="card" data-fx="drop" data-t="1.0"><h3>Doctolib</h3><div class="does">Books a slot.<br>Explains nothing.</div>
+        <ul><li class="y"><b>✓</b>Booking</li><li class="n"><b>✕</b>Insurance</li><li class="n"><b>✕</b>Translation</li></ul></div>
+      <div class="card" data-fx="drop" data-t="1.6"><h3>Insurer apps</h3><div class="does">Only know their<br>own policy.</div>
+        <ul><li class="y"><b>✓</b>Own insurance</li><li class="n"><b>✕</b>Right doctor</li><li class="n"><b>✕</b>Translation</li></ul></div>
+      <div class="card" data-fx="drop" data-t="2.2"><h3>Translators</h3><div class="does">Know words,<br>not medicine.</div>
+        <ul><li class="y"><b>✓</b>Your language</li><li class="n"><b>✕</b>Medical context</li><li class="n"><b>✕</b>Booking</li></ul></div>
+      <div class="card us" data-fx="pop" data-t="4.4"><h3>Health Navigator</h3><div class="does">With you for<br>the whole visit.</div>
+        <ul><li class="y"><b>✓</b>Insurance + doctor</li><li class="y"><b>✓</b>Booking + guides</li><li class="y"><b>✓</b>Live translation</li></ul></div>
+    </div>
+  </div>
+</section>
+
+<!-- S6 · business -->
+<section class="scene" id="s6" data-start="44" data-end="54" data-from="200,900">
+  <div class="decor" data-decor="#EEF0E8"></div>
+  <div class="pad">
+    <div class="kicker" style="color:var(--teal)" data-fx="fade" data-t="0.2">Business model</div>
+    <div class="big" data-fx="up" data-t="0.2">Free to start. <span class="hl">Paid by users & partners.</span></div>
+    <div class="tiers">
+      <div class="tier t1" data-fx="drop" data-t="0.7"><div class="nm">Free</div><div class="pr">€0</div><p>Guides & insurance basics</p></div>
+      <div class="tier t2" data-fx="drop" data-t="1.1"><div class="nm">Premium</div><div class="pr"><span data-cfg="price"></span><small>/month</small></div><p>Booking help & unlimited live translation</p></div>
+      <div class="tier t3" data-fx="drop" data-t="2.4"><div class="nm">B2B</div><div class="pr">Licenses</div><p>Universities & insurers pay for their internationals</p></div>
+    </div>
+  </div>
+  <div class="growth">
+    <div class="gt" data-fx="fade" data-t="4.4">Growth path</div>
+    <div class="gstep" data-fx="left" data-t="4.7"><span class="dot" style="width:40px;height:40px;font-size:20px">1</span><div><b data-cfg="city"></b><span>Pilot with our university</span></div></div>
+    <div class="gstep" data-fx="left" data-t="5.4"><span class="dot" style="width:52px;height:52px;font-size:24px">2</span><div><b>NRW</b><span>70+ universities</span></div></div>
+    <div class="gstep" data-fx="left" data-t="6.1"><span class="dot" style="width:64px;height:64px;font-size:28px">3</span><div><b>Germany</b><span>400,000+ students</span></div></div>
+    <div class="gstep" data-fx="left" data-t="6.8"><span class="dot" style="width:76px;height:76px;font-size:32px">4</span><div><b>Expat workers</b><span>via employers & insurers</span></div></div>
+  </div>
+</section>
+
+<!-- S7 · outro -->
+<section class="scene" id="s7" data-start="54" data-end="60.5" data-from="960,540">
+  <div class="decor" data-decor="#1B2B3E"></div>
+  <div class="abs" style="left:90px;top:250px" data-fx="up" data-t="0.1"><div data-avatar="me" data-scale="1.6" id="me7"></div></div>
+  <div class="abs" style="left:800px;top:350px">
+    <div class="logo" data-fx="pop" data-t="0.4"><span class="mark">+</span><span class="big">Health Navigator</span></div>
+    <div class="tag" data-fx="up" data-t="0.9"><span class="hl-solid">Healthcare in your language.</span></div>
+    <div class="contact" data-fx="fade" data-t="1.6" data-cfg="contact"></div>
+  </div>
+</section>
+
+<div id="rail"></div>
+
+<script>
+/* ======================= EDIT HERE ======================= */
+const CONFIG = {
+  first: 'Rocío',
+  bio: '[Degree] at Bergische Universität Wuppertal · from [country] · Founder',
+  city: 'Wuppertal',
+  price: '€2.99',
+  contact: 'healthnavigator@[domain] · [instagram/website]',
+  // Your animated self. hair: 'long' | 'bun' | 'short' | 'curly' | 'ponytail'
+  me:    { skin:'#D9A47E', hair:'#2A1C15', style:'long', glasses:false, top:'#0E8C7F', earrings:true },
+  recep: { skin:'#F1C9A5', hair:'#B9B3AA', style:'bun',  glasses:true,  top:'#FBFBF7', earrings:false },
+};
+/* ========================================================= */
+document.querySelectorAll('[data-cfg]').forEach(e => e.textContent = CONFIG[e.dataset.cfg]);
+
+/* ---------- avatar ---------- */
+function shade(hex, k){const n=parseInt(hex.slice(1),16);const f=c=>Math.max(0,Math.min(255,Math.round(c*k)));return '#'+[(n>>16)&255,(n>>8)&255,n&255].map(f).map(v=>v.toString(16).padStart(2,'0')).join('')}
+function avatar(p){
+  const H=p.hair, S=p.skin, Sd=shade(p.skin,.86), T=p.top, I='#101D2C';
+  const back = {
+    long:`<path d="M88 205 C80 80 320 80 312 205 L332 410 C260 440 140 440 68 410 Z" fill="${H}"/>`,
+    ponytail:`<path d="M300 170 C380 200 370 330 330 380 C350 300 330 240 290 220Z" fill="${H}"/>`,
+    bun:`<circle cx="200" cy="72" r="46" fill="${H}"/>`,
+    short:`<path d="M92 210 C84 90 316 90 308 210 L310 270 L90 270Z" fill="${H}"/>`,
+    curly:[...Array(14)].map((_,i)=>{const a=Math.PI*(0.95+i/13*1.1);return `<circle cx="${200+128*Math.cos(a)}" cy="${215+140*Math.sin(a)}" r="42" fill="${H}"/>`}).join('')+`<rect x="80" y="210" width="240" height="160" rx="60" fill="${H}"/>`,
+  }[p.style]||'';
+  const front = {
+    long:`<path d="M92 200 C96 92 304 84 308 200 C290 150 250 128 214 126 C190 158 140 178 92 200Z" fill="${H}"/>`,
+    ponytail:`<path d="M92 196 C96 92 304 84 308 196 C270 140 150 136 92 196Z" fill="${H}"/>`,
+    bun:`<path d="M94 190 C100 100 300 100 306 190 C280 140 120 140 94 190Z" fill="${H}"/>`,
+    short:`<path d="M92 200 C96 92 304 84 308 200 C300 160 260 130 200 132 C150 134 110 160 92 200Z" fill="${H}"/>`,
+    curly:[...Array(9)].map((_,i)=>`<circle cx="${110+i*22.5}" cy="${118+Math.abs(i-4)*9}" r="30" fill="${H}"/>`).join(''),
+  }[p.style]||'';
+  const eyes = (l,r)=>l+r;
+  return `<svg viewBox="0 0 400 520" width="400" height="520" style="overflow:visible">
+    <g class="breathe">
+    ${back}
+    <path d="M52 520 C52 410 120 370 200 370 C280 370 348 410 348 520 Z" fill="${T}" stroke="${I}" stroke-width="8"/>
+    <path d="M168 372 L200 410 L232 372" fill="none" stroke="${I}" stroke-width="7" stroke-linejoin="round"/>
+    <rect x="174" y="300" width="52" height="80" rx="20" fill="${Sd}"/>
+    <ellipse cx="94" cy="222" rx="20" ry="28" fill="${S}" stroke="${I}" stroke-width="7"/>
+    <ellipse cx="306" cy="222" rx="20" ry="28" fill="${S}" stroke="${I}" stroke-width="7"/>
+    ${p.earrings?`<circle cx="94" cy="258" r="8" fill="#FFE34D" stroke="${I}" stroke-width="4"/><circle cx="306" cy="258" r="8" fill="#FFE34D" stroke="${I}" stroke-width="4"/>`:''}
+    <ellipse cx="200" cy="210" rx="108" ry="122" fill="${S}" stroke="${I}" stroke-width="8"/>
+    ${front}
+    <ellipse cx="140" cy="250" rx="20" ry="11" fill="#F08A7E" opacity=".45"/><ellipse cx="260" cy="250" rx="20" ry="11" fill="#F08A7E" opacity=".45"/>
+    <g data-expr="smile">
+      <path d="M135 182 Q155 172 175 180" stroke="${I}" stroke-width="7" fill="none" stroke-linecap="round"/><path d="M225 180 Q245 172 265 182" stroke="${I}" stroke-width="7" fill="none" stroke-linecap="round"/>
+      <g class="lids"><ellipse cx="155" cy="214" rx="11" ry="14" fill="${I}"/><ellipse cx="245" cy="214" rx="11" ry="14" fill="${I}"/></g>
+      <path d="M168 266 Q200 290 232 266" stroke="${I}" stroke-width="8" fill="none" stroke-linecap="round"/></g>
+    <g data-expr="happy">
+      <path d="M135 178 Q155 166 175 176" stroke="${I}" stroke-width="7" fill="none" stroke-linecap="round"/><path d="M225 176 Q245 166 265 178" stroke="${I}" stroke-width="7" fill="none" stroke-linecap="round"/>
+      <path d="M140 218 Q155 202 170 218" stroke="${I}" stroke-width="8" fill="none" stroke-linecap="round"/><path d="M230 218 Q245 202 260 218" stroke="${I}" stroke-width="8" fill="none" stroke-linecap="round"/>
+      <path d="M160 258 Q200 256 240 258 Q232 302 200 304 Q168 302 160 258Z" fill="#fff" stroke="${I}" stroke-width="7" stroke-linejoin="round"/></g>
+    <g data-expr="talk">
+      <path d="M135 182 Q155 172 175 180" stroke="${I}" stroke-width="7" fill="none" stroke-linecap="round"/><path d="M225 180 Q245 172 265 182" stroke="${I}" stroke-width="7" fill="none" stroke-linecap="round"/>
+      <ellipse cx="155" cy="214" rx="10" ry="12" fill="${I}"/><ellipse cx="245" cy="214" rx="10" ry="12" fill="${I}"/>
+      <ellipse class="mouth" cx="200" cy="272" rx="22" ry="14" fill="#7A2E2A" stroke="${I}" stroke-width="7"/></g>
+    <g data-expr="blank">
+      <path d="M130 168 Q155 160 178 166" stroke="${I}" stroke-width="7" fill="none" stroke-linecap="round"/><path d="M222 166 Q245 160 270 168" stroke="${I}" stroke-width="7" fill="none" stroke-linecap="round"/>
+      <circle cx="155" cy="212" r="27" fill="#fff" stroke="${I}" stroke-width="7"/><circle cx="245" cy="212" r="27" fill="#fff" stroke="${I}" stroke-width="7"/>
+      <circle cx="155" cy="212" r="5" fill="${I}"/><circle cx="245" cy="212" r="5" fill="${I}"/>
+      <path d="M178 276 L222 276" stroke="${I}" stroke-width="8" stroke-linecap="round"/>
+      <path d="M318 130 C332 154 338 166 338 176 a16 16 0 0 1 -32 0 C306 166 310 154 318 130Z" fill="#7FC3EA" stroke="${I}" stroke-width="5"/></g>
+    <g data-expr="sad">
+      <path d="M135 176 Q158 186 176 180" stroke="${I}" stroke-width="7" fill="none" stroke-linecap="round"/><path d="M224 180 Q242 186 265 176" stroke="${I}" stroke-width="7" fill="none" stroke-linecap="round"/>
+      <ellipse cx="155" cy="218" rx="10" ry="12" fill="${I}"/><ellipse cx="245" cy="218" rx="10" ry="12" fill="${I}"/>
+      <path d="M172 282 Q200 264 228 282" stroke="${I}" stroke-width="8" fill="none" stroke-linecap="round"/></g>
+    ${p.glasses?`<g fill="none" stroke="${I}" stroke-width="7"><circle cx="155" cy="214" r="34"/><circle cx="245" cy="214" r="34"/><path d="M189 210 Q200 202 211 210"/></g>`:''}
+    </g>
+    <g class="arm" style="transform-origin:318px 420px"><path d="M318 420 C350 380 370 330 372 280" stroke="${I}" stroke-width="58" stroke-linecap="round" fill="none"/><path d="M318 420 C350 380 370 330 372 280" stroke="${T}" stroke-width="42" stroke-linecap="round" fill="none"/>
+      
+      <circle cx="372" cy="262" r="30" fill="${S}" stroke="${I}" stroke-width="7"/></g>
+  </svg>`;
+}
+document.querySelectorAll('[data-avatar]').forEach(e=>{
+  const s=+e.dataset.scale||1; e.innerHTML=avatar(CONFIG[e.dataset.avatar]);
+  e.style.transform=`scale(${s})`; e.style.transformOrigin='left top';
+  e.querySelector('.arm').style.display = e.id ? '' : 'none';
+});
+// expression timelines (scene-local seconds) and waving
+const EXPR = { me1:[[0,'smile'],[1.4,'talk'],[2.0,'smile'],[3.0,'blank']], me2:[[0,'happy']], me4:[[0,'smile'],[1.2,'happy']], me7:[[0,'happy']] };
+const WAVE = { me2:[0.2,3.2], me7:[0.3,5.5] };
+document.querySelectorAll('[data-avatar="recep"]').forEach(e=>e.id='recep');
+EXPR.recep=[[0,'talk']];
+['me1','me4'].forEach(id=>document.querySelector('#'+id+' .arm').style.display='none');
+
+// S1 floating words in the blank
+document.getElementById('floats').innerHTML=['Überweisung','Termin','Krankmeldung','Zuzahlung','Versichertenkarte','Hausarzt','gesetzlich','Facharzt','AU-Bescheinigung','privat'].map((w,i)=>`<span class="float" data-i="${i}">${w}</span>`).join('');
+// decor plus-signs
+document.querySelectorAll('[data-decor]').forEach(d=>{d.innerHTML=[...Array(14)].map((_,i)=>`<i style="color:${d.dataset.decor};font-size:${60+((i*37)%5)*30}px" data-i="${i}">+</i>`).join('')});
+document.getElementById('wave').innerHTML=Array.from({length:20},()=>'<i></i>').join('');
+
+const RAIL=[['1 · Team',6,12],['2 · Problem & solution',12,34],['3 · USP & competition',34,44],['4 · Business model',44,54]];
+document.getElementById('rail').innerHTML=RAIL.map(r=>`<div class="seg"><div class="bar"><div class="fill"></div></div>${r[0]}</div>`).join('');
+
+/* ---------- deterministic renderer ---------- */
+const clamp=(x,a=0,b=1)=>Math.min(b,Math.max(a,x));
+const easeOut=x=>1-Math.pow(1-x,3), easeInOut=x=>x<.5?4*x*x*x:1-Math.pow(-2*x+2,3)/2;
+const easeBack=x=>{const c=1.7;return 1+(c+1)*Math.pow(x-1,3)+c*Math.pow(x-1,2)};
+const scenes=[...document.querySelectorAll('.scene')].map((s,i)=>({el:s,i,a:+s.dataset.start,b:+s.dataset.end,from:(s.dataset.from||'960,540').split(',').map(Number),
+  fx:[...s.querySelectorAll('[data-fx]')],wins:[...s.querySelectorAll('[data-win]')],ons:[...s.querySelectorAll('[data-on]')],counts:[...s.querySelectorAll('[data-count]')],
+  avatars:[...s.querySelectorAll('[data-avatar]')],decor:[...s.querySelectorAll('.decor i')]}));
+const rnd=i=>{const x=Math.sin(i*127.1)*43758.5453;return x-Math.floor(x)};
+
+function render(t){
+  scenes.forEach((s,idx)=>{
+    const lt=t-s.a, next=scenes[idx+1];
+    const covered = next && t >= next.a+0.75;
+    const vis = lt>=0 && !covered;
+    s.el.style.display = vis?'block':'none'; s.el.style.zIndex = 10+idx;
+    if(!vis) return;
+    // circle reveal from data-from point
+    if(idx>0){const r=easeInOut(clamp(lt/0.75))*2300; s.el.style.clipPath=`circle(${r}px at ${s.from[0]}px ${s.from[1]}px)`;}
+    for(const e of s.fx){
+      const p=clamp((lt-(+e.dataset.t))/0.6), q=easeOut(p);
+      switch(e.dataset.fx){
+        case 'fade': e.style.opacity=q; break;
+        case 'up': e.style.opacity=q; e.style.transform=`translateY(${(1-q)*60}px)`; break;
+        case 'left': e.style.opacity=q; e.style.transform=`translateX(${(1-q)*90}px)`; break;
+        case 'drop': {const k=easeBack(clamp((lt-(+e.dataset.t))/0.55)); e.style.opacity=clamp(p*3); e.style.transform=`translateY(${(1-k)*-160}px)`; break;}
+        case 'pop': {const k=easeBack(clamp((lt-(+e.dataset.t))/0.45)); e.style.opacity=clamp(p*2); e.style.transform=`scale(${0.6+0.4*k})`; break;}
+        case 'stamp': {const k=clamp((lt-(+e.dataset.t))/0.22); e.style.opacity=k; e.style.transform=`rotate(${e.dataset.rot}deg) scale(${1.9-0.9*easeOut(k)})`; break;}
+        case 'phone': e.style.opacity=q; e.style.transform=`translateY(${(1-q)*160}px) rotate(${(1-q)*-6}deg)`; break;
+        case 'shake': {const a=clamp((lt-(+e.dataset.t))/1.0)*10; e.style.transform=`translate(${Math.sin(lt*53)*a}px,${Math.cos(lt*41)*a}px)`; break;}
+        case 'blur': {const k=clamp((lt-(+e.dataset.t))/0.8); e.style.filter=`blur(${k*10}px)`; e.style.opacity=1-k*0.4; break;}
+      }
+    }
+    for(const w of s.wins){const [a,b]=w.dataset.win.split(',').map(Number); w.style.opacity=clamp((lt-a)/0.3)*clamp((b-lt)/0.3);}
+    for(const o of s.ons){const [a,b]=o.dataset.on.split(',').map(Number); o.classList.toggle('on',lt>=a&&lt<b);}
+    for(const c of s.counts){const p=easeOut(clamp((lt-(+c.dataset.t))/(+c.dataset.dur))); c.textContent=(Math.round(+c.dataset.count*p/1000)*1000).toLocaleString('en-US');}
+    for(const av of s.avatars){
+      const id=av.id, tl=EXPR[id]||[[0,'smile']]; let cur=tl[0][1]; for(const [k,v] of tl) if(lt>=k) cur=v;
+      av.querySelectorAll('[data-expr]').forEach(g=>g.style.display=g.dataset.expr===cur?'':'none');
+      const m=av.querySelector('[data-expr="talk"] .mouth'); if(m) m.setAttribute('ry', 6+Math.abs(Math.sin(lt*16))*14);
+      const lids=av.querySelectorAll('.lids ellipse'); const blink=((lt+idx)%3.2)<0.12; lids.forEach(l=>l.setAttribute('ry',blink?2:14));
+      av.querySelector('.breathe').style.transform=`translateY(${Math.sin(lt*2.4)*4}px)`;
+      const w=WAVE[id]; const arm=av.querySelector('.arm');
+      if(w&&arm.style.display!=='none'){const on=lt>=w[0]&&lt<=w[1]; arm.style.transform=`rotate(${on?Math.sin((lt-w[0])*9)*16:0}deg)`;}
+    }
+    s.decor.forEach(d=>{const i=+d.dataset.i; d.style.left=(rnd(i)*1900)+'px'; d.style.top=(rnd(i+50)*1050 - ((lt*18*(1+rnd(i+9)))%160))+'px'; d.style.transform=`rotate(${lt*20*(rnd(i+3)-.5)}deg)`;});
+  });
+  // S1 blank: circle from Rocío's head + floating words
+  const bt=t-3.6; document.getElementById('blank').style.clipPath=`circle(${easeInOut(clamp(bt/0.7))*2300}px at 420px 560px)`;
+  document.querySelectorAll('#blank .float').forEach(f=>{const i=+f.dataset.i; f.style.left=(rnd(i+20)*1750)+'px'; f.style.top=(80+rnd(i+30)*900 + Math.sin(t*0.8+i)*20)+'px'; f.style.transform=`translateX(${(t-3.6)*30*(rnd(i)-.5)}px)`;});
+  document.querySelectorAll('#wave i').forEach((b,i)=>{b.style.height=(12+Math.abs(Math.sin(t*7+i*0.7))*46*Math.abs(Math.sin(i*1.3+t)))+'px'});
+  const segs=document.querySelectorAll('#rail .seg');
+  RAIL.forEach((r,i)=>{const p=clamp((t-r[1])/(r[2]-r[1])); segs[i].querySelector('.fill').style.width=(p*100)+'%'; segs[i].classList.toggle('on',t>=r[1]&&t<r[2]);});
+  document.getElementById('rail').style.opacity=clamp((t-6.5)/0.4)*clamp((54.3-t)/0.4);
+}
+window.render=render;
+if(!new URLSearchParams(location.search).get('render')){const t0=performance.now();(function loop(){render(((performance.now()-t0)/1000)%60.5);requestAnimationFrame(loop)})();} else render(0);
+</script>
+</body>
+</html>
