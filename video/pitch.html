@@ -30,7 +30,13 @@
   #rail .seg.on{color:var(--ink);font-weight:600}
 
   /* S1 */
-  #s1 .big{font-size:150px}
+  .patient{position:absolute;left:150px;bottom:120px;text-align:center}
+  .patient .who{font-family:var(--font-mono);font-size:24px;color:var(--ink-soft);margin-top:14px;letter-spacing:.04em}
+  .q{position:absolute;font-family:var(--font-display);font-weight:900;font-size:130px;color:var(--stamp)}
+  .says{position:absolute;left:780px;right:150px;top:190px}
+  .say{position:relative;background:#fff;border:4px solid var(--ink);border-radius:30px;border-top-right-radius:8px;padding:22px 34px;font-family:var(--font-display);font-weight:700;font-size:44px;margin:0 0 22px auto;width:fit-content;max-width:100%;transform-origin:right top}
+  .say u{text-decoration:none;color:var(--stamp)}
+  .blank{position:absolute;inset:0;background:var(--paper);display:flex;flex-direction:column;justify-content:center;padding:0 150px 80px}
   .chip{position:absolute;font-family:var(--font-mono);font-weight:600;font-size:40px;color:var(--stamp);border:4px solid var(--stamp);border-radius:12px;padding:10px 22px;background:rgba(251,251,247,.92);text-transform:uppercase;letter-spacing:.04em}
   /* S2 */
   #s2 .wm{display:flex;align-items:center;gap:36px;margin:30px 0 16px}
@@ -122,16 +128,39 @@
 </head>
 <body>
 
-<!-- S1 · Hook -->
-<section class="scene" id="s1" data-start="0" data-end="5">
-  <div class="big" data-fx="up" data-t="0.15" data-i18n="s1a"></div>
-  <div class="big soft" data-fx="up" data-t="0.85" data-i18n="s1b"></div>
-  <div id="chips"></div>
-  <div class="big" style="position:absolute;left:150px;bottom:170px;font-size:92px" data-fx="up" data-t="3.6"><span class="hl" data-i18n="s1c"></span></div>
+<!-- S1 · Hook: at the reception, going blank -->
+<section class="scene" id="s1" data-start="0" data-end="6">
+  <div class="kicker" data-fx="fade" data-t="0">Praxis Dr. Müller · Anmeldung</div>
+  <div class="patient" data-fx="up" data-t="0.1">
+    <svg viewBox="0 0 400 470" width="400" height="470">
+      <path d="M40 470 C40 360 110 320 200 320 C290 320 360 360 360 470 Z" fill="#101D2C"/>
+      <circle cx="200" cy="180" r="130" fill="#E3F2F0" stroke="#101D2C" stroke-width="10"/>
+      <g data-win="0,3.3"><circle cx="152" cy="170" r="13" fill="#101D2C"/><circle cx="248" cy="170" r="13" fill="#101D2C"/>
+        <path d="M165 235 Q200 252 235 235" stroke="#101D2C" stroke-width="9" fill="none" stroke-linecap="round"/></g>
+      <g data-win="3.3,6.5"><circle cx="152" cy="170" r="24" fill="#fff" stroke="#101D2C" stroke-width="8"/><circle cx="248" cy="170" r="24" fill="#fff" stroke="#101D2C" stroke-width="8"/>
+        <circle cx="152" cy="170" r="5" fill="#101D2C"/><circle cx="248" cy="170" r="5" fill="#101D2C"/>
+        <path d="M175 245 L225 245" stroke="#101D2C" stroke-width="9" stroke-linecap="round"/>
+        <path d="M318 120 C330 140 336 152 336 162 a14 14 0 0 1 -28 0 C308 152 312 140 318 120Z" fill="#7FC3EA"/></g>
+    </svg>
+    <div class="who" data-i18n="s1who"></div>
+  </div>
+  <div class="q" data-fx="pop" data-t="3.5" style="left:520px;top:150px">?</div>
+  <div class="q" data-fx="pop" data-t="3.75" style="left:600px;top:250px;font-size:90px">?</div>
+  <div class="says" data-fx="shake" data-t="2.2"><div data-fx="blur" data-t="3.1">
+    <div class="say" data-fx="pop" data-t="0.4">Guten Tag! Haben Sie einen <u>Termin</u>?</div>
+    <div class="say" data-fx="pop" data-t="1.1"><u>Versichertenkarte</u>, bitte.</div>
+    <div class="say" data-fx="pop" data-t="1.7"><u>Gesetzlich</u> oder <u>privat</u>?</div>
+    <div class="say" data-fx="pop" data-t="2.2">Haben Sie eine <u>Überweisung</u> vom <u>Hausarzt</u>?</div>
+    <div class="say" data-fx="pop" data-t="2.7">Brauchen Sie auch eine <u>Krankmeldung</u>?</div>
+  </div></div>
+  <div class="blank" data-fx="fade" data-t="3.9">
+    <div class="big" style="font-size:180px" data-fx="up" data-t="4.0" data-i18n="s1a"></div>
+    <div class="big" style="font-size:72px;margin-top:30px" data-fx="up" data-t="4.6"><span class="hl" data-i18n="s1c"></span></div>
+  </div>
 </section>
 
 <!-- S2 · Intro & team -->
-<section class="scene" id="s2" data-start="5" data-end="12">
+<section class="scene" id="s2" data-start="6" data-end="12">
   <div class="kicker" data-fx="fade" data-t="0.1" data-i18n="s2k"></div>
   <div class="wm" data-fx="up" data-t="0.3"><span class="mark">+</span><span class="big">Health Navigator</span></div>
   <div class="big soft" style="font-size:56px;font-weight:700" data-fx="up" data-t="0.8" data-i18n="s2sub"></div>
@@ -242,7 +271,7 @@ const CONFIG = {
 
 const T = {
  en:{
-  s1a:"You're sick.", s1b:"In a new country.", s1c:"Every word feels like a wall.",
+  s1a:"Total blank.", s1who:"You · week 1 in Germany", s1c:"Every word feels like a wall.",
   s2k:"Start-up · {city}, Germany", s2sub:"German healthcare, explained in your language.",
   s3k:"The problem", s3lbl:"international students in Germany. Plus millions of international workers.",
   s3src:"Source: DAAD / DZHW, Wissenschaft weltoffen 2025 (winter semester 2024/25)",
@@ -265,7 +294,7 @@ const T = {
   s7t:"Healthcare in your language."
  },
  de:{
-  s1a:"Du bist krank.", s1b:"In einem neuen Land.", s1c:"Jedes Wort fühlt sich an wie eine Wand.",
+  s1a:"Kopf leer.", s1who:"Du · Woche 1 in Deutschland", s1c:"Jedes Wort fühlt sich an wie eine Wand.",
   s2k:"Start-up · {city}", s2sub:"Das deutsche Gesundheitssystem – in deiner Sprache.",
   s3k:"Das Problem", s3lbl:"internationale Studierende in Deutschland. Plus Millionen internationale Fachkräfte.",
   s3src:"Quelle: DAAD / DZHW, Wissenschaft weltoffen 2025 (WiSe 2024/25)",
@@ -296,34 +325,13 @@ document.querySelectorAll('[data-html]').forEach(e => e.innerHTML = fill(L[e.dat
 document.getElementById('price').innerHTML = (CONFIG.lang==='de' ? CONFIG.price.replace('€','').replace('.',',')+'\u00a0€' : CONFIG.price) + `<small>${CONFIG.lang==='de'?'/Monat':'/month'}</small>`;
 document.getElementById('contact').textContent = CONFIG.contact;
 
-// S1 chips
-const words = [['Überweisung',160,470,-5],['Termin',640,450,6],['Krankmeldung',950,490,-3],['Versichertenkarte',1360,450,4],['gesetzlich versichert',190,630,3],['Hausarzt',880,650,-6],['Zuzahlung',1170,615,5],['Facharzt',1530,640,-4]];
-document.getElementById('chips').innerHTML = words.map((w,i)=>`<div class="chip" data-fx="stamp" data-t="${(1.7+i*0.22).toFixed(2)}" data-rot="${w[3]}" style="left:${w[1]}px;top:${w[2]}px">${w[0]}</div>`).join('');
-
-// S2 team
-const initials = n => n.replace(/\[.*?\]/g,'').trim().split(/\s+/).map(p=>p[0]).join('').slice(0,2).toUpperCase();
-document.getElementById('team').innerHTML = CONFIG.team.map((m,i)=>`<div class="card" data-fx="up" data-t="${(1.6+i*0.5).toFixed(1)}"><div class="avatar">${initials(m.name)}</div><div><h3>${m.name}</h3><div class="role">${m.role[CONFIG.lang]||m.role.en}</div><p>${m.bio[CONFIG.lang]||m.bio.en}</p></div></div>`).join('');
-
-// S3 barriers
-document.getElementById('barriers').innerHTML = L.b.map((b,i)=>`<div class="barrier" data-fx="left" data-t="${(3.0+i*0.55).toFixed(2)}"><span class="x">✕</span><div>${b[0]}<small>${b[1]}</small></div></div>`).join('');
-
-// S4 waveform
-document.getElementById('wave').innerHTML = Array.from({length:22},()=>'<i></i>').join('');
-
-// S5 table
-const Y='<span class="y">✓</span>', N='<span class="n">✕</span>', P='<span class="p"></span>';
-const grid=[[N,N,Y,N,P],[P,N,N,N,P],[N,N,N,P,Y]];
-document.getElementById('cmp').innerHTML = `<tr><th></th>${L.cols.map(c=>`<th>${c}</th>`).join('')}</tr>` +
-  grid.map((r,i)=>`<tr data-fx="up" data-t="${(1.2+i*0.6).toFixed(1)}"><td>${L.rows[i]}</td>${r.map(c=>`<td>${c}</td>`).join('')}</tr>`).join('') +
-  `<tr class="us" data-fx="pop" data-t="4.6"><td>Health Navigator</td>${[Y,Y,Y,Y,Y].map(c=>`<td>${c}</td>`).join('')}</tr>`;
-
 // S6 growth
 document.getElementById('gsteps').innerHTML = L.g.map((g,i)=>`<div class="gstep" data-fx="left" data-t="${(4.7+i*0.7).toFixed(1)}"><span class="dot"></span><div><b>${fill(g[0])}</b><span>${fill(g[1])}</span></div></div>`).join('');
 
 // progress rail: the four blocks of the guideline
 const RAIL = CONFIG.lang==='de'
-  ? [['1 · Team',5,12],['2 · Problem & Lösung',12,34],['3 · USP & Wettbewerb',34,44],['4 · Geschäftsmodell',44,54]]
-  : [['1 · Team',5,12],['2 · Problem & solution',12,34],['3 · USP & competition',34,44],['4 · Business model',44,54]];
+  ? [['1 · Team',6,12],['2 · Problem & Lösung',12,34],['3 · USP & Wettbewerb',34,44],['4 · Geschäftsmodell',44,54]]
+  : [['1 · Team',6,12],['2 · Problem & solution',12,34],['3 · USP & competition',34,44],['4 · Business model',44,54]];
 document.getElementById('rail').innerHTML = RAIL.map(r=>`<div class="seg"><div class="bar"><div class="fill"></div></div>${r[0]}</div>`).join('');
 
 /* ---------------- deterministic renderer: render(t) ---------------- */
@@ -348,6 +356,8 @@ function render(t){
         case 'left': e.style.opacity=q; e.style.transform=`translateX(${(1-q)*80}px)`; break;
         case 'pop': {const k=easeBack(clamp((lt-(+e.dataset.t))/0.45)); e.style.opacity=clamp(p*2); e.style.transform=`scale(${0.7+0.3*k})`; break;}
         case 'stamp': {const k=clamp((lt-(+e.dataset.t))/0.25); e.style.opacity=k; e.style.transform=`rotate(${e.dataset.rot}deg) scale(${1.8-0.8*easeOut(k)})`; break;}
+        case 'shake': {const a=clamp((lt-(+e.dataset.t))/1.2)*9*clamp((3.9-lt)/0.2); e.style.transform=`translate(${Math.sin(lt*53)*a}px,${Math.cos(lt*41)*a}px)`; break;}
+        case 'blur': {const k=clamp((lt-(+e.dataset.t))/0.6); e.style.filter=`blur(${k*9}px)`; e.style.opacity=1-k*0.5; break;}
         case 'phone': e.style.opacity=q; e.style.transform=`translateY(${(1-q)*140}px) rotate(${(1-q)*-4}deg)`; break;
       }
     }
@@ -362,7 +372,7 @@ function render(t){
   // rail
   const segs=document.querySelectorAll('#rail .seg');
   RAIL.forEach((r,i)=>{const p=clamp((t-r[1])/(r[2]-r[1])); segs[i].querySelector('.fill').style.width=(p*100)+'%'; segs[i].classList.toggle('on',t>=r[1]&&t<r[2]);});
-  document.getElementById('rail').style.opacity = clamp((t-4.8)/0.4)*clamp((54.3-t)/0.4);
+  document.getElementById('rail').style.opacity = clamp((t-5.8)/0.4)*clamp((54.3-t)/0.4);
 }
 window.render=render;
 // Live preview when opened in a browser (the renderer sets ?render=1)
